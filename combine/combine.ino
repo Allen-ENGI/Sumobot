@@ -7,9 +7,6 @@ const int echoPinL = 6;
 
 const int trigPinR = 9;
 const int echoPinR = 8;
-float durationF, distanceF;
-float durationL, distanceL;
-float durationR, distanceR;
 
 //setup motor
 #include <Servo.h>;
@@ -26,13 +23,12 @@ setSpeedL(0); //Sets speed variable delay(1000);
 setSpeedR(0); //Sets speed variable delay(1000);
 }
 
-
+//Speed control
 void setSpeedL(int speed){
   int angle = map(speed, -50, 50, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
   ESCL.write(angle); 
   // delay(1000);
 }
-
 void setSpeedR(int speed){
   int angle = map(speed, -50, 50, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
   ESCR.write(angle); 
@@ -65,37 +61,60 @@ void setup() {
   
 }
 
-float ultro(){
+float ultro(const int tri, const int echo){
   float result;
-  digitalWrite(trigPin, LOW);
+  float duration;
+
+  digitalWrite(tri, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(tri, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
+  digitalWrite(tri, LOW);
+  duration = pulseIn(echo, HIGH);
+
   result = (duration*.0343)/2;
   Serial.print("Distance: ");
   Serial.println(result);
   return result;
 }
 
-void loop() {
-  
-  int speedL, speedR;
+float disF, disL, disR;
 
+void loop() {  
+  int speedL, speedR;
+  disF = ultro(trigPinF, echoPinF);
+  disL = ultro(trigPinL, echoPinL);
+  disR = ultro(trigPinR, echoPinR);
+  
   //edge
+  //low is white, hight is black
   bool edgeL = digitalRead(detectL);
   bool edgeR = digitalRead(detectR);
-  if(){
 
-  }else if(){
+  if(!edgeL){//left sensor reaching edge
+    //right back turn
 
-  }else{
+  }else if(!edgeR){
+    //left back turn
+
+  }else if(!edgeL || !edgeR){//both sesnor
+    //back
+    //turn around
+  }
+
+  else{
+    //no edge sensor, activate Search or attack
     
-    if(){//no sensor detect
+    if(disF < 30){//front detect
+      //forward attack
+      setSpeedL(40);
+      setSpeedR(40);
+    }else if(disL < 50){//one of the sensors detecting
+      //left turn, attack
+    }else if(disR < 50){
+      //right turn, attack
+    }else{//no sensor detected
       //search
-    }else if(){//one of the sensors detecting
-      //attack
     }
   }
 
@@ -106,20 +125,20 @@ void loop() {
   // put your main code here, to run repeatedly:
   //Implements speed variable
 
-  if (!digitalRead(detect))//white
-  {
-    Serial.println("detect!");
-    speed = -20;
+  // if (!digitalRead(detect))//white
+  // {
+  //   Serial.println("detect!");
+  //   speed = -20;
 
-    setSpeed(speed);
-    delay(100);
-  }else{//black
-    Serial.println("No detect!");
-    speed = 20;
-    setSpeed(speed);
-    delay(100);
+  //   setSpeed(speed);
+  //   delay(100);
+  // }else{//black
+  //   Serial.println("No detect!");
+  //   speed = 20;
+  //   setSpeed(speed);
+  //   delay(100);
 
-  }
+  // }
 
   // if(distance<100){
   //   Serial.println("first");
