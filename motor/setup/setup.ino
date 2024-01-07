@@ -11,7 +11,7 @@ setSpeed(0); //Sets speed variable delay(1000);
 
 void setSpeed(int speed){
 
-int angle = map(speed, 0, 100, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
+int angle = map(speed, -50, 50 , 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
 ESC1.write(angle);
 
 }
@@ -26,7 +26,7 @@ void loop() {
 
 int speed; //Implements speed variable
 
-for(speed = 0; speed <= 70; speed += 5) { //Cycles speed up to 70% power for 1 second
+for(speed = 0; speed <= 40; speed += 5) { //Cycles speed up to 70% power for 1 second
 
 setSpeed(speed); //Creates variable for speed to be used in in for loop
 
@@ -37,7 +37,7 @@ delay(1000);
 
 delay(3000); //Stays on for 4 seconds
 
-for(speed = 70; speed > 0; speed -= 5) { // Cycles speed down to 0% power for 1 second
+for(speed = 40; speed > 0; speed -= 5) { // Cycles speed down to 0% power for 1 second
 
 setSpeed(speed); delay(1000);
 

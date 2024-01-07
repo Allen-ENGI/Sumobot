@@ -35,6 +35,9 @@ void setSpeedR(int speed){
   // delay(1000);
 }
 
+
+
+
 void setup() {
   //motor
   ESCL.attach(2, 1000, 2000); //Adds ESC to certain pin. 
@@ -42,7 +45,7 @@ void setup() {
   setSpeedL(0); 
   setSpeedR(0);
 
-  arm();
+  //arm();
   
   // put your setup code here, to run once:
   //ultrosonic
@@ -62,6 +65,51 @@ void setup() {
   
 }
 
+void attack(int a) {
+  if(a == 1){
+    setSpeedR(45);
+    setSpeedL(45);
+  } else{
+    setSpeedR(0);
+    setSpeedL(0);
+    delay(50);
+    setSpeedR(20);
+    setSpeedL(20);
+    delay(50);
+    setSpeedR(45);
+    setSpeedL(45);
+    Serial.println("attack");
+  }
+
+  if(digitalRead(detectR) || digitalRead(detectL)) {
+    setSpeedR(0);
+  setSpeedL(0);
+  }
+}
+
+
+void move_back(){
+  Serial.println("left edge");
+  setSpeedR(0);
+  setSpeedL(0);
+  delay(300); 
+  setSpeedL(20);
+  setSpeedR(-20);
+ 
+  delay(1000);
+  setSpeedR(0);
+  setSpeedL(0);
+  delay(300);
+}
+void turn_left(){
+  setSpeedR(-15);
+  setSpeedL(15);
+  delay(500);
+  setSpeedR(0);
+  setSpeedL(0);
+}
+
+
 float ultro(const int tri, const int echo){
   float result;
   float duration;
@@ -80,10 +128,12 @@ float ultro(const int tri, const int echo){
 }
 
 
+int att_counter = 0;
+
+
 void loop() {  
   int speedL, speedR;
-  
-  
+
   //edge
   //low is white, hight is black
   int edgeL = digitalRead(detectL);
@@ -91,13 +141,18 @@ void loop() {
 
   if(!digitalRead(detectL) && digitalRead(detectR) ){//left sensor reaching edge
     //right back turn
-    Serial.println("left edge");
-    
+    move_back();
+    turn_left();
+    //setSpeedR(0);
+    //setSpeedL(0);
+    att_counter = 0;
 
   }else if(!digitalRead(detectR) && digitalRead(detectL)){
     //left back turn
     Serial.println("right edge");
-    
+    setSpeedR(0);
+    setSpeedL(0);
+    att_counter = 0;
   }
   // else if((!digitalRead(detectL)) && (!digitalRead(detectR))){//both sesnor
   //   Serial.println("Both");
@@ -115,14 +170,17 @@ void loop() {
 
     if(disF < 30){//front detect
     Serial.println("Front side enemy");
+    attack(att_counter);
+    att_counter = 1;
+
+
       //forward attack
-      // setSpeedL(40);
-      // setSpeedR(40);
     }else if(disL < 50){//one of the sensors detecting
       //left turn, attack
-
+      Serial.println("left side enemy");
+      delay(1000);
     }else if(disR < 50){
-      Serial.println("Rigt side enemy");
+      Serial.println("Right side enemy");
       delay(1000);
       //right turn, attack
     }else{//no sensor detected
