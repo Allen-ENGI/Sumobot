@@ -39,7 +39,8 @@ void setup() {
   //motor
   ESCL.attach(2, 1000, 2000); //Adds ESC to certain pin. 
   ESCR.attach(3, 1000, 2000); //Adds ESC to certain pin. 
-  setSpeed(0);
+  setSpeedL(0); 
+  setSpeedR(0);
 
   arm();
   
@@ -64,7 +65,6 @@ void setup() {
 float ultro(const int tri, const int echo){
   float result;
   float duration;
-
   digitalWrite(tri, LOW);
   delayMicroseconds(2);
   digitalWrite(tri, HIGH);
@@ -75,47 +75,62 @@ float ultro(const int tri, const int echo){
   result = (duration*.0343)/2;
   Serial.print("Distance: ");
   Serial.println(result);
+
   return result;
 }
 
-float disF, disL, disR;
 
 void loop() {  
   int speedL, speedR;
-  disF = ultro(trigPinF, echoPinF);
-  disL = ultro(trigPinL, echoPinL);
-  disR = ultro(trigPinR, echoPinR);
+  
   
   //edge
   //low is white, hight is black
-  bool edgeL = digitalRead(detectL);
-  bool edgeR = digitalRead(detectR);
+  int edgeL = digitalRead(detectL);
+  int edgeR = digitalRead(detectR);
 
-  if(!edgeL){//left sensor reaching edge
+  if(!digitalRead(detectL) && digitalRead(detectR) ){//left sensor reaching edge
     //right back turn
+    Serial.println("left edge");
+    
 
-  }else if(!edgeR){
+  }else if(!digitalRead(detectR) && digitalRead(detectL)){
     //left back turn
-
-  }else if(!edgeL || !edgeR){//both sesnor
-    //back
-    //turn around
+    Serial.println("right edge");
+    
   }
+  // else if((!digitalRead(detectL)) && (!digitalRead(detectR))){//both sesnor
+  //   Serial.println("Both");
+  //   //back
+  //   //turn around
+  // }
 
   else{
     //no edge sensor, activate Search or attack
-    
+    Serial.println("Not edge");
+    float disF = ultro(trigPinF, echoPinF);
+    float disL = ultro(trigPinL, echoPinL);
+    float disR = ultro(trigPinR, echoPinR);
+    // Serial.println(disR);
+
     if(disF < 30){//front detect
+    Serial.println("Front side enemy");
       //forward attack
-      setSpeedL(40);
-      setSpeedR(40);
+      // setSpeedL(40);
+      // setSpeedR(40);
     }else if(disL < 50){//one of the sensors detecting
       //left turn, attack
+
     }else if(disR < 50){
+      Serial.println("Rigt side enemy");
+      delay(1000);
       //right turn, attack
     }else{//no sensor detected
+      Serial.println("Searching");
+      delay(1000);
       //search
     }
+    Serial.println("1");
   }
 
   // distance = ultro();
