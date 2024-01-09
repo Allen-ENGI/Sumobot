@@ -109,6 +109,20 @@ void turn_left(){
   setSpeedL(0);
 }
 
+void search(){
+  setSpeedR(20);
+  setSpeedL(30);
+}
+
+void left_90(){
+  //原地左转90°，需要测试
+}
+
+void right_90(){
+  //原地右转90°，需要测试
+}
+
+
 
 float ultro(const int tri, const int echo){
   float result;
@@ -172,7 +186,7 @@ void loop() {
     Serial.println("Front side enemy");
     attack(att_counter);
     att_counter = 1;
-
+    delay(1000);
 
       //forward attack
     }else if(disL < 50){//one of the sensors detecting
@@ -185,6 +199,7 @@ void loop() {
       //right turn, attack
     }else{//no sensor detected
       Serial.println("Searching");
+      search();
       delay(1000);
       //search
     }
@@ -226,5 +241,12 @@ void loop() {
   //   //  ESC1.write(0); 
   //   // delay(1000);
   // }
+  //需要测试内容：
+  //1. 左右转90°所需速度和时间
+  //2. searching function
+  //3. 躲避edge的速度和时间
+  //4. 检测距离50cm是否合理
+  //5. 去掉所有条件中的delay测试
+  //
 
 }

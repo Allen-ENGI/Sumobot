@@ -18,7 +18,7 @@ ESC1.write(angle);
 
 void setup() {
 
-ESC1.attach(9, 1000, 2000); //Adds ESC to certain pin.
+ESC1.attach(3, 1000, 2000); //Adds ESC to certain pin.
 
 }
 
