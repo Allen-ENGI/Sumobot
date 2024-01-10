@@ -25,12 +25,12 @@ setSpeedR(0); //Sets speed variable delay(1000);
 
 //Speed control
 void setSpeedL(int speed){
-  int angle = map(speed, -50, 50, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
+  int angle = map(speed, -100, 100, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
   ESCL.write(angle); 
   // delay(1000);
 }
 void setSpeedR(int speed){
-  int angle = map(speed, -50, 50, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
+  int angle = map(speed, -100, 100, 0, 180); //Sets servo positions to different speeds ESC1.write(angle);
   ESCR.write(angle); 
   // delay(1000);
 }
@@ -67,17 +67,15 @@ void setup() {
 
 void attack(int a) {
   if(a == 1){
-    setSpeedR(45);
-    setSpeedL(45);
+    setSpeedR(10);
+    setSpeedL(11);
   } else{
     setSpeedR(0);
     setSpeedL(0);
     delay(50);
     setSpeedR(20);
-    setSpeedL(20);
+    setSpeedL(22);
     delay(50);
-    setSpeedR(45);
-    setSpeedL(45);
     Serial.println("attack");
   }
 
@@ -93,10 +91,10 @@ void move_back(){
   setSpeedR(0);
   setSpeedL(0);
   delay(300); 
-  setSpeedL(20);
+  setSpeedL(-22);
   setSpeedR(-20);
  
-  delay(1000);
+  delay(700);
   setSpeedR(0);
   setSpeedL(0);
   delay(300);
@@ -110,16 +108,26 @@ void turn_left(){
 }
 
 void search(){
-  setSpeedR(20);
-  setSpeedL(30);
+  setSpeedR(10);
+  setSpeedL(22);
 }
 
 void left_90(){
   //原地左转90°，需要测试
+  setSpeedR(10);
+  setSpeedL(-10);
+  delay(500);
+  setSpeedR(0);
+  setSpeedL(0);
 }
 
 void right_90(){
   //原地右转90°，需要测试
+  setSpeedR(-10);
+  setSpeedL(10);
+  delay(500);
+  setSpeedR(0);
+  setSpeedL(0);
 }
 
 
