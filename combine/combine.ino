@@ -44,7 +44,7 @@ void setup() {
   ESCR.attach(3, 1000, 2000); //Adds ESC to certain pin. 
   setSpeedL(0); 
   setSpeedR(0);
-
+  delay(500);
   //arm();
   
   // put your setup code here, to run once:
@@ -72,10 +72,10 @@ void attack(int a) {
   } else{
     setSpeedR(0);
     setSpeedL(0);
-    delay(50);
+    //delay(50);
     setSpeedR(20);
     setSpeedL(22);
-    delay(50);
+    //delay(50);
     Serial.println("attack");
   }
 
@@ -100,36 +100,36 @@ void move_back(){
   delay(300);
 }
 void turn_left(){
-  setSpeedR(-15);
-  setSpeedL(15);
-  delay(500);
+  setSpeedR(-20);
+  setSpeedL(20);
+  delay(400);
+  setSpeedR(0);
+  setSpeedL(0);
+}
+
+void turn_right(){
+  setSpeedL(20);
+  setSpeedR(-20);
+  delay(400);
   setSpeedR(0);
   setSpeedL(0);
 }
 
 void search(){
-  setSpeedR(10);
-  setSpeedL(22);
-}
-
-void left_90(){
-  //原地左转90°，需要测试
-  setSpeedR(10);
-  setSpeedL(-10);
-  delay(500);
+  //setSpeedR(13);
   setSpeedR(0);
   setSpeedL(0);
-}
-
-void right_90(){
-  //原地右转90°，需要测试
-  setSpeedR(-10);
-  setSpeedL(10);
-  delay(500);
-  setSpeedR(0);
+  setSpeedL(27);
+  setSpeedR(19);
+  delay(100);
   setSpeedL(0);
-}
+  //setSpeedR(21);
+  setSpeedR(0);
+  delay(10);
+  
 
+  //setSpeedR(-20);
+}
 
 
 float ultro(const int tri, const int echo){
@@ -150,37 +150,57 @@ float ultro(const int tri, const int echo){
 }
 
 
-int att_counter = 0;
-
+int attack_counter = 200;
+ 
 
 void loop() {  
   int speedL, speedR;
-
+  
   //edge
   //low is white, hight is black
   int edgeL = digitalRead(detectL);
   int edgeR = digitalRead(detectR);
-
-  if(!digitalRead(detectL) && digitalRead(detectR) ){//left sensor reaching edge
+  float disF = ultro(trigPinF, echoPinF);
+  //delay(1000);
+  if(!digitalRead(detectL) && digitalRead(detectR) && disF > 30){//left sensor reaching edge
     //right back turn
     move_back();
     turn_left();
     //setSpeedR(0);
     //setSpeedL(0);
-    att_counter = 0;
+    attack_counter = 200;
 
-  }else if(!digitalRead(detectR) && digitalRead(detectL)){
+  }else if(!digitalRead(detectR) && digitalRead(detectL) && disF>30){
     //left back turn
     Serial.println("right edge");
+    // setSpeedR(0);
+    // setSpeedL(0);
+    move_back();
+    turn_right();
+    attack_counter = 200;
+  }
+  
+  else if((!digitalRead(detectL)) && (!digitalRead(detectR)) && disF >50){//both sesnor
+    Serial.println("Both");
+    //back
+    move_back();
+    turn_right();
     setSpeedR(0);
     setSpeedL(0);
-    att_counter = 0;
+    attack_counter = 200;
+
+    //turn around
   }
-  // else if((!digitalRead(detectL)) && (!digitalRead(detectR))){//both sesnor
-  //   Serial.println("Both");
-  //   //back
-  //   //turn around
-  // }
+
+  else if((!digitalRead(detectL)) && (!digitalRead(detectR)) && disF < 30){
+    // setSpeedR(0);
+    // setSpeedL(0);
+    // delay(20);
+
+    setSpeedR(22);
+    setSpeedL(20);
+    attack_counter = 200;
+  }
 
   else{
     //no edge sensor, activate Search or attack
@@ -190,65 +210,79 @@ void loop() {
     float disR = ultro(trigPinR, echoPinR);
     // Serial.println(disR);
 
-    if(disF < 30){//front detect
-    Serial.println("Front side enemy");
-    attack(att_counter);
-    att_counter = 1;
-    delay(1000);
+    if(disF < 60){//front detect
+      Serial.println("Front side enemy");
+      //attack(att_counter);
+      //att_counter = 1;
+      // setSpeedR(0);
+      // setSpeedL(0);
+      // delay(20);
 
+      // setSpeedR(22);
+      // setSpeedL(20);
+      // if(60> disF > 12){
+      //   setSpeedR(0);
+      //   setSpeedL(0);
+      //   delay(5);
+
+      //   setSpeedR(22);
+      //   setSpeedL(20);
+      // } else { //强力攻击
+      //   setSpeedR(0);
+      //   setSpeedL(0);
+      //   delay(5);
+
+      //   setSpeedR(33);
+      //   setSpeedL(30);
+      // }
+    //delay(1000);
+      setSpeedR(0);
+      setSpeedL(0);
+      delay(5);
+
+      setSpeedR((attack_counter + 20)/10);
+      setSpeedL(attack_counter/10);
       //forward attack
-    }else if(disL < 50){//one of the sensors detecting
+      if(attack_counter < 300){
+        attack_counter = attack_counter + 4;
+      }
+      
+    } else if(disL < 60){//one of the sensors detecting
       //left turn, attack
+      attack_counter = 20;
       Serial.println("left side enemy");
-      delay(1000);
-    }else if(disR < 50){
+      //delay(1000);
+      setSpeedR(0);
+      setSpeedL(0);
+      delay(5);
+      setSpeedR(25);
+      delay(20);
+      
+
+    }else if(disR < 60){
+      attack_counter = 200;
       Serial.println("Right side enemy");
-      delay(1000);
+      //delay(1000);
+
+      setSpeedR(0);
+      setSpeedL(0);
+      delay(5);
+      setSpeedL(19);
+      delay(5);
+      
+      
       //right turn, attack
     }else{//no sensor detected
       Serial.println("Searching");
       search();
-      delay(1000);
+      attack_counter = 200;
+      //delay(1000);
       //search
     }
     Serial.println("1");
   }
 
-  // distance = ultro();
-  // delay(100);
-  
-  //0-50
-  // put your main code here, to run repeatedly:
-  //Implements speed variable
 
-  // if (!digitalRead(detect))//white
-  // {
-  //   Serial.println("detect!");
-  //   speed = -20;
-
-  //   setSpeed(speed);
-  //   delay(100);
-  // }else{//black
-  //   Serial.println("No detect!");
-  //   speed = 20;
-  //   setSpeed(speed);
-  //   delay(100);
-
-  // }
-
-  // if(distance<100){
-  //   Serial.println("first");
-  //   speed = 25;
-  //   // ESC1.write(90); 
-  //   setSpeed(speed);
-  //   // delay(1000);
-  // }else{
-  //   Serial.println("second");
-  //   speed = 0;
-  //   setSpeed(speed);
-  //   //  ESC1.write(0); 
-  //   // delay(1000);
-  // }
   //需要测试内容：
   //1. 左右转90°所需速度和时间
   //2. searching function

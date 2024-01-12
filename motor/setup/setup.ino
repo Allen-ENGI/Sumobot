@@ -1,7 +1,10 @@
 #include <Servo.h>;
 Servo ESC1;
 Servo ESC2;
+const int trigPinF = 5;
+const int echoPinF = 4;
 int pos = 0; //Sets position variable
+#define detectL 10
 
 void arm(){
 
@@ -22,7 +25,31 @@ void setup() {
 
 ESC1.attach(3, 1000, 2000); //Adds ESC to certain pin.
 ESC2.attach(2, 1000, 2000);
+pinMode(trigPinF, OUTPUT);
+pinMode(echoPinF, INPUT);
+pinMode(detectL,INPUT);
 }
+
+
+float ultro(const int tri, const int echo){
+  float result;
+  float duration;
+  digitalWrite(tri, LOW);
+  delayMicroseconds(2);
+  digitalWrite(tri, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(tri, LOW);
+  duration = pulseIn(echo, HIGH);
+
+  result = (duration*.0343)/2;
+  Serial.print("Distance: ");
+  Serial.println(result);
+
+  return result;
+}
+
+
+
 
 void loop() {
 
@@ -45,11 +72,31 @@ int speed; //Implements speed variable
 
 // }
 
-setSpeed(22,20);
-delay(5000); 
+//======ultra sensor测试==========
+// float disF = ultro(trigPinF, echoPinF);
+// if(disF < 40){
+//   setSpeed(0,0);
+//   Serial.println("stop");
+// } else{
+//   setSpeed(20,20);
+//   Serial.println("run");
+// }
 
-setSpeed(0,0); //Sets speed variable to zero no matter what
 
-delay(3000); //Turns off for 1 second
+//============ir sensor测试==============
+if(! digitalRead(detectL)){
+  setSpeed(-10,-10);
+  delay(600);
+  setSpeed(0,0);
+} else{
+  setSpeed(20,20);
+}
+//======================================
+
+
+//setSpeed(22,20);
+//setSpeed(0,0); //Sets speed variable to zero no matter what
+
+//delay(3000); //Turns off for 1 second
 
 }
